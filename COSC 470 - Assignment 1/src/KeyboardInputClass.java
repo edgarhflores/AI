@@ -38,17 +38,17 @@ class KeyboardInputClass {
     //										ENTER). If validateInput=true, the method assumes that this is a valid entry
     //										even if it is not explicitly included in validEntries (i.e., the method will
     //										add it to validEntries).
-    //		validEntries	- acceptable characters if validateInput = true. Note: if validation is to be
+    //              validEntries	- acceptable characters if validateInput = true. Note: if validation is to be
     //										performed, then unless one of the case conversion modes is specified, the user
     //										entry must match one of the validEntries characters exactly in order to be
     //										accepted.
-    //		caseConversionMode- 0=no conversion occurs; 1=the entered character is converted to uppercase before
+    //              caseConversionMode- 0=no conversion occurs; 1=the entered character is converted to uppercase before
     //										being checked against validEntries and before being returned; 2= the entered
     //										character is converted to lowercase before being checked against validEntries
     //										and before being returned. Note: both case conversion modes 1 and 2 also convert
     //										validEntries to the specified case prior to checking the validity of the entry.
     //										If validateInput=false, this parameter is ignored.
-    //		prompt		- descriptive text prompting the user for an entry
+    //              prompt - descriptive text prompting the user for an entry
     //Returns:		result				- the character entered by the user or defaultResult if no character was entered
     //Calls:		getKeyboardInput
     public char getCharacter(boolean validateInput, char defaultResult, String validEntries, int caseConversionMode, String prompt) {
