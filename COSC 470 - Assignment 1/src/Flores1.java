@@ -12,7 +12,7 @@
 //******************************************************************************
 
 //Class:        Flores1
-//Description:	Shortest path finder for a given maze
+//Description:	Main class for the program
 //******************************************************************************
 //******************************************************************************
 public class Flores1 {
@@ -22,20 +22,19 @@ public class Flores1 {
     static int startCol;
     static int pathCount = 0;
     static int shortestPathCount = Integer.MAX_VALUE;
-
+    //********************************************************************
     //Method:       main
     //Description:	Asks user for a maze text file and executes approripiate 
     //              methods to find the shortest path out of a maze.
     //Parameters:   none
     //Returns:      nothing
-    //Calls:        nothing
+    //Calls:        readFile, importMazeFromTextFile, printMaze, search
     //Globals:      int row
     //              int col
     //              int startRow
     //              int startCol
     //              int pathcount
-    //              int shortestPathCount
-    //********************************************************************
+    //              int shortestPathCount   
     public static void main(String[] args) {
         KeyboardInputClass userInput = new KeyboardInputClass();
         boolean loop = true;
@@ -85,7 +84,8 @@ public class Flores1 {
             }
         }
     }
-
+    
+    //********************************************************************
     //Method:       readFile
     //Description:	Reads the first four lines of the maze file to determine the
     //              total rows and columns of the text file and the starting
@@ -97,7 +97,6 @@ public class Flores1 {
     //              int col
     //              int startRow
     //              int startCol
-    //********************************************************************
     private static void readFile(TextFileClass textFile) {
 
         System.out.println("\n" + textFile.fileName + " opened");
@@ -111,6 +110,7 @@ public class Flores1 {
         }
     }//end of printTextFile
 
+    //********************************************************************
     //Method:      importMazeFromTextFile
     //Description: Reads chars from the text file and translates each char from
     //             the text file maze to either a black square or a space then
@@ -120,7 +120,6 @@ public class Flores1 {
     //Returns:     nothing
     //Calls:       nothing
     //Globals:     none
-    //********************************************************************
     private static void importMazeFromTextFile(char[][] maze, TextFileClass textFile) {
         try {
             for (int i = 0; i < maze.length; i++) {
@@ -136,6 +135,8 @@ public class Flores1 {
             System.out.println("Maze not formated appropriately");
         }
     }// end of importMazeFromTextFile
+    
+    //********************************************************************
     //Method:       printMaze       
     //Description:	Prints the maze
     //Parameters:   Maze - the maze to be printed
@@ -145,9 +146,7 @@ public class Flores1 {
     //Returns:     nothing
     //Calls:       nothing
     //Globals:     int row
-    //             int col
-    //********************************************************************
-
+    //             int col   
     private static void printMaze(char[][] maze, boolean show, boolean pause) {
         KeyboardInputClass stall = new KeyboardInputClass();
         if (show == true) {
@@ -163,6 +162,8 @@ public class Flores1 {
             }
         }
     }//end of printMaze
+    
+    //********************************************************************
     //Method:       search 
     //Description:	Prefroms a recurisve search of through the maze to determine
     //              the shortes path. This algorithm checks up, east, down, and
@@ -174,12 +175,10 @@ public class Flores1 {
     //              preRow - the previous row of that was evalued of the maze
     //              preCol - the previous column of that was evalued of the maze
     //Returns:      nothing
-    //Calls:        search
+    //Calls:        search (recursively)
     //Globals:      int row
     //              int col
     //              int pathCount
-    //********************************************************************
-
     private static void search(char[][] maze, char[][] shortestPath, int currRow, int currCol, int preRow, int preCol, boolean show, boolean pause) {
         if (currRow < row && currRow >= 0 && currCol < col && currCol >= 0) {
             switch (maze[currRow][currCol]) {
@@ -207,6 +206,8 @@ public class Flores1 {
             }
         }
     } // end of search
+    
+    //********************************************************************
     //Method:       compareShortestPath	
     //Description:	When a path is found, this method compares the shortest path
     //              count of steps for the new found path to the shortest path
@@ -220,8 +221,6 @@ public class Flores1 {
     //Returns:     nothing
     //Calls:       nothing
     //Globals:     none
-    //********************************************************************
-
     private static void compareShortestPath(char[][] maze, char[][] shortestPath, int path, boolean show, boolean auto) {
         if (path < shortestPathCount) {
             shortestPathCount = path;
