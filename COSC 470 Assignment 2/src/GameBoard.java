@@ -1,153 +1,144 @@
+//Program:      GameBoard.java
+//Course:       COSC470
+//Description:	Assignment 2 - 8 Puzzel
+//Author:       Edgar Flores
+//Revised:      2/27/2018
+//Language:     Java
+//IDE:          NetBeans 8.2
+//Notes:        This program creates a 8, 15, 24, or 35 puzzle and prefroms actions
+//              pertaining to manipulating the puzzel. 
+//******************************************************************************
+//******************************************************************************
 
-//Step 2
-//Create the board
-//  How to repersent the board?            
+//Class:        GameBoard
+//Description:	Main class for the program
+//******************************************************************************
+//******************************************************************************
 public class GameBoard {
 
     String board[];
-    int space;
-    int dem;
-    int previousShuffleMove;
-    public GameBoard(int boardSize) {
-        board = new String[boardSize + 1];
-        //single array
-        //System.out.println(board.length);
-        for (int i = 0; i < board.length; i++) {
-            if (i == board.length - 1) {
-                board[i] = " ";
-                space = i;
-            } else {
-                board[i] = Integer.toString(i + 1);
+    String goalBoard[];
+    int space; // the index of blank tile
+    int dem; // the deminsions of the board
+    int previousShuffleMove; // the previous shuffle move that was made 
+    GameBoard parent = null;
+    //********************************************************************
+    //Method:       GameBoard
+    //Description:  constructor for the game board
+    //Parameters:   boardSize - the size of the puzzel board to build
+    //Returns:      nothing
+    //Calls:        nothing
+    //Globals:      board, space 
 
+    public GameBoard(int boardSize, int manual) {
+        KeyboardInputClass input = new KeyboardInputClass();
+        board = new String[boardSize + 1];
+        goalBoard = new String[boardSize + 1];
+        dem = (int) Math.sqrt(board.length + 0.0);
+        if (manual != -1) {
+            for (int i = 0; i < board.length; i++) {
+                if (i == board.length - 1) {
+                    board[i] = " ";
+                    goalBoard[i] = " ";
+                    space = i;
+                } else {
+                    board[i] = Integer.toString(i + 1);
+                    goalBoard[i] = Integer.toString(i + 1);
+                }//end of else
+            }//end of for loop
+        } else {
+            int row = 1;
+            int col = 1;
+            for (int i = 0; i < board.length; i++) {
+                board[i] = input.getString(" ", "Enter tile for position " + row + "," + col);
+                col++;
+                if ((i + 1) % dem == 0) {
+                    row++;
+                    col = 1;
+                }
             }
-            dem = (int) Math.sqrt(board.length + 0.0);
         }
     }//end of constructor
 
-    //    
-//Print the board
+    //********************************************************************
+    //Method:       printBoard
+    //Description:  prints the board
+    //Parameters:   none
+    //Returns:      nothing
+    //Calls:        nothing
+    //Globals:      dem
     public void printBoard() {
-
         for (int i = 0; i < board.length; i++) {
             int a = i + 1;// index to be used for modulo
             String t = board[i];
             System.out.printf("%5s", t);
             if (a % dem == 0)// prints tiles on a board until row finishes 
-            {
                 System.out.println();
-            }
         }
         System.out.println();
     }
 
-    public void shuffleATile() {
-        int ranDirec = (int) (Math.random() * (5 - 1) + 1);
-        String vaildTile;
-        String openTile;
+    //********************************************************************
+    //Method:       moveATile
+    //Description:  makes one vaild move on the board puzzel
+    //Parameters:   none
+    //Returns:      nothing
+    //Calls:        nothing
+    //Globals:      board, space, dem, previousShuffleMove
+    public boolean moveATile(int dir, boolean random) {
         boolean isShuffled = true;
-        while (isShuffled) {
-            System.out.println("Generating random move...");           
-            switch ((int) (Math.random() * (5 - 1) + 1)) {
+        boolean isValid = false;
+        do{
+            
+            if(random == true){
+                dir = (int) (Math.random() * (5 - 1) + 1);
+            }else{
+                isShuffled = false;
+            }
+            
+            switch (dir) {
+                
                 case 1://up
-                    System.out.println("Checking if can go north...");
                     if (space - dem >= 0 && previousShuffleMove != 3) {
-                        System.out.println("Going north");
-                        vaildTile = board[space - dem];
-                        openTile = board[space];
-                        board[space - dem] = openTile;
-                        board[space] = vaildTile;
-                        space = space - dem;
-                        System.out.println("Space is at: " + (space + 1));
-                        isShuffled = false;
-                        previousShuffleMove = 1;
-                    }else if (previousShuffleMove == 3){
-                        System.out.println("No, because last move came from that direction");
-                        System.out.println();
-                    }else {
-                        System.out.println("No, because north does not exist");
-                        System.out.println();
+                        isShuffled = swapATile((space - dem), 1);
+                        isValid = true;
                     }
                     break;
                 case 2:// east
-                    System.out.println("Checking if can go east...");
-                    if (space + 1 < board.length && (space+2) % dem != 1 && previousShuffleMove != 4) {
-                        System.out.println("Going east");
-                        vaildTile = board[space + 1];
-                        openTile = board[space];
-                        board[space + 1] = openTile;
-                        board[space] = vaildTile;
-                        space = space + 1;
-                        System.out.println("Space is at: " + (space + 1));
-                        isShuffled = false;
-                        previousShuffleMove = 2;
-                    }else if ((space+2) % dem == 1){
-                        System.out.println("No, because this is a new row");
-                        System.out.println();
-                    }else if (previousShuffleMove == 4){
-                        System.out.println("No, because last move came from that direction");
-                        System.out.println();
-                    }else
-                        System.out.println("No, because east does not exist\n");
-                    
+                    if (space + 1 < board.length && (space + 2) % dem != 1 && previousShuffleMove != 4) {
+                        isShuffled = swapATile((space + 1), 2);
+                        isValid = true;
+                    }
                     break;
                 case 3://south
-                    System.out.println("Checking if can go south...");
                     if (space + dem < board.length && previousShuffleMove != 1) {
-                        System.out.println("Going south");
-                        vaildTile = board[space + dem];
-                        openTile = board[space];
-                        board[space + dem] = openTile;
-                        board[space] = vaildTile;
-                        space = space + dem;
-                        System.out.println("Space is at: " + (space + 1));
-                        isShuffled = false;
-                        previousShuffleMove = 3;
-                    }else if (previousShuffleMove == 1){
-                        System.out.println("No, because last move came from that direction");
-                        System.out.println();
-                    }else{
-                        System.out.println("No, because south does not exist");
-                        System.out.println();
+                        isShuffled = swapATile((space + dem), 3);
+                        isValid = true;
                     }
                     break;
                 case 4://west
-                    System.out.println("Checking if can go west...");
                     if (space - 1 >= 0 && space % dem != 0 && previousShuffleMove != 2) {
-                        System.out.println("Going west");
-                        vaildTile = board[space - 1];
-                        openTile = board[space];
-                        board[space - 1] = openTile;
-                        board[space] = vaildTile;
-                        space = space - 1;
-                        System.out.println("Space is at: " + (space + 1));
-                        isShuffled = false;
-                        previousShuffleMove = 4;
-                    }else if (space % dem == 0){
-                        System.out.println("No, because this is a new row");
-                        System.out.println();
-                    }else if (previousShuffleMove == 2){
-                        System.out.println("No, because last move came from that direction\n");
-                    }else
-                        System.out.println("No, because west does not exist\n");
-                    break;
-            }
-        }
+                        isShuffled = swapATile((space - 1), 4);
+                        isValid = true;
+                    }
+            }//end of switch
+        }while (isShuffled);
+        return isValid;
+    }// end of moveATile
 
-    }// end of shuffleATile
+    private boolean swapATile(int vaildTilePos, int dir) {
+        String vaildTile;
+        String openTile;
+        vaildTile = board[vaildTilePos];
+        openTile = board[space];
+        board[vaildTilePos] = openTile;
+        board[space] = vaildTile;
+        space = vaildTilePos;
+        previousShuffleMove = dir;
+        return false ;
+    }
 
+    public void getParent(GameBoard parent){
+        this.parent = parent;
+    }
 }// end of class
-
-//double array
-//        int tile = 1;
-//        for (int i = 0; i < dem; i++) {
-//            for (int j = 0; j < dem; j++) {
-//                if (i == dem - 1 && j == dem - 1) {
-//                    board[i][j] = " ";
-//                } else {
-//                    board[i][j] = Integer.toString(tile);
-//                }
-//                System.out.print(board[i][j] + " ");
-//                tile++;
-//            }
-//            System.out.println();
-//        }//end of for loop 
