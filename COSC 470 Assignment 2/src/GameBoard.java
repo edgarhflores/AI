@@ -2,7 +2,7 @@
 //Course:       COSC470
 //Description:	Assignment 2 - 8 Puzzel
 //Author:       Edgar Flores
-//Revised:      2/27/2018
+//Revised:      3/1/2018
 //Language:     Java
 //IDE:          NetBeans 8.2
 //Notes:        This program creates a 8, 15, 24, or 35 puzzle and prefroms actions
@@ -28,8 +28,7 @@ public class GameBoard {
     //Parameters:   boardSize - the size of the puzzel board to build
     //Returns:      nothing
     //Calls:        nothing
-    //Globals:      board, space 
-
+    //Globals:     
     public GameBoard(int boardSize, int manual) {
         KeyboardInputClass input = new KeyboardInputClass();
         board = new String[boardSize + 1];
@@ -66,7 +65,7 @@ public class GameBoard {
     //Parameters:   none
     //Returns:      nothing
     //Calls:        nothing
-    //Globals:      dem
+    //Globals:      dem, board
     public void printBoard() {
         for (int i = 0; i < board.length; i++) {
             int a = i + 1;// index to be used for modulo
@@ -126,18 +125,33 @@ public class GameBoard {
         return isValid;
     }// end of moveATile
 
-    private boolean swapATile(int vaildTilePos, int dir) {
+    //********************************************************************
+    //Method:       swapATile
+    //Description:  swaps one tile to another title
+    //Parameters:   validTilePos - this is a valid tile posistion
+    //              dir - the direction
+    //Returns:      false - shuffled was achieved 
+    //Calls:        nothing
+    //Globals:      board, space, previousShuffleMove
+    private boolean swapATile(int validTilePos, int dir) {
         String vaildTile;
         String openTile;
-        vaildTile = board[vaildTilePos];
+        vaildTile = board[validTilePos];
         openTile = board[space];
-        board[vaildTilePos] = openTile;
+        board[validTilePos] = openTile;
         board[space] = vaildTile;
-        space = vaildTilePos;
+        space = validTilePos;
         previousShuffleMove = dir;
         return false ;
     }
 
+    //********************************************************************
+    //Method:       getParent
+    //Description:  gets the parent for the GameBoard clas
+    //Parameters:   parent
+    //Returns:      nothing
+    //Calls:        nothing
+    //Globals:      parent
     public void getParent(GameBoard parent){
         this.parent = parent;
     }

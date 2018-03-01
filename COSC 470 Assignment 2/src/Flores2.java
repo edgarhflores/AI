@@ -2,7 +2,7 @@
 //Course:       COSC470
 //Description:	Assignment 2 - 8 Puzzel
 //Author:       Edgar Flores
-//Revised:      2/27/2018
+//Revised:      3/1/2018
 //Language:     Java
 //IDE:          NetBeans 8.2
 //Notes:        This program solves the 8, 15, 24, or 35 puzzle (at the choice of the user) 
@@ -17,9 +17,7 @@
 //******************************************************************************
 //******************************************************************************
 public class Flores2 {
-
     static int boardSize = 1;
-
     //********************************************************************
     //Method:       main
     //Description:  Makes the appropriate calss to creates a board, shuffles the 
@@ -31,7 +29,6 @@ public class Flores2 {
     public static void main(String[] args) {
         KeyboardInputClass input = new KeyboardInputClass();
         GameBoard board1;
-
         System.out.println("Edgar Flores: Assignment 2 - Program to solve the 8, 15, 24, or 36 Puzzle...\n");
         while (boardSize != 0) {
             boardSize = input.getInteger(false, 8, 0, 0, "Specify the puzzle size (8, 15, 24, or 35; 0 to exit): ");
@@ -39,6 +36,7 @@ public class Flores2 {
                 int shuffleMoves = input.getInteger(false, -1, 0, 0, "Number of shuffle moves desired? (press ENTER alone to specify starting board)");
                 char s = input.getCharacter(true, 'N', "YNys", 1, "Show intermediate board positions? (Y/N: Default=N)");
                 boolean show = (s == 'Y') ? show = true : false;
+                System.out.println("Search mode = breadth-first");
                 if (shuffleMoves == -1) {
                     board1 = new GameBoard(boardSize, shuffleMoves);
                     GameBoard board2 = new GameBoard(boardSize, 1);
@@ -61,17 +59,23 @@ public class Flores2 {
                     System.out.printf("Start state (%d shuffle moves actually made)\n", shuffleMoves);
                     System.out.println("Starting Board");
                     board1.printBoard();
-
                 }// end of else 
                 breadthFristSearch(board1);
             }// end of if          
         }// end of while      
     }//end of main
 
+    //********************************************************************
+    //Method:       breadthFristSearch
+    //Description:  implements breath-frist search
+    //Parameters:   board 1 - the shuffled board
+    //Returns:      nothing
+    //Calls:        showSolutions, findPath, generateChildren, checkChildren           
+    //Globals:      none 
     private static void breadthFristSearch(GameBoard board1) {
-        System.out.println("In breadth first...");
+        System.out.println("Working...");
         boolean loop = true;
-        int iteration = 0;
+        boolean success = false;
         LinkedQueue open = new LinkedQueue();
         open.enqueue(board1);
         LList closed = new LList();
@@ -79,50 +83,43 @@ public class Flores2 {
         LList goalPath = null;
 
         while (!open.isEmpty() && loop) {
-            System.out.println();
-            System.out.println("Iteration " + iteration);
             GameBoard x = (GameBoard) open.dequeue();
-            System.out.println("Pop off x...");
-            System.out.println("x is : ");
-            x.printBoard();
             closed.add(x);
-            System.out.println("closed list contains " + closed.getLength() + " nodes...");
-            showSolutions(closed);
-            System.out.println("is x solution?");
             if (success(x)) {
                 System.out.println("Success!");
                 x.printBoard();
-                findPath(goalPath, x);
-                System.out.println("Goal path is...");
-                showSolutions(goalPath);
+                //findPath(goalPath, x);
+                //System.out.println("Goal path is...");
+                //showSolutions(goalPath);
                 loop = false;
+                success = true;
             } else {
-                System.out.println();
-                System.out.println("No, generate children...");
                 children = new LList();
                 generateChildren(x, children);
-                showSolutions(children);
-                System.out.println("Making sure children generated are not in open or closed...");
                 checkChildren(children, open, closed);
-                System.out.println("Children to be used...");
-                showSolutions(children);
                 for (int i = 1; i < children.getLength() + 1; i++) {
                     GameBoard child = (GameBoard) children.getEntry(i);
                     open.enqueue(child);
                 }
             }
-            
-            iteration++;
         }
-        
-        System.out.println("Fail");
+        if(!success){
+        System.out.println("Fail, no solution found");
+        }
 
     }
-
+    
+    //********************************************************************
+    //Method:       success
+    //Description:  Checks to see if a node that was generated is a solution
+    //Parameters:   x - the node that is being evaluted as a solution
+    //Returns:      true - a solution was found
+    //              false - no solution was found
+    //Calls:        nothing
+    //Globals:      none 
     private static boolean success(GameBoard x) {
         boolean success = true;
         for (int i = 0; i < x.board.length; i++) {
-
             if (!x.board[i].equals(x.goalBoard[i])) {
                 success = false;
                 break;
@@ -131,6 +128,15 @@ public class Flores2 {
         return success;
     }
 
+    //********************************************************************
+    //Method:       generateChildren
+    //Description:  creates all possible children which are know as possible
+    //              moves to take to solve the maze
+    //Parameters:   x - the parent node
+    //              children - a linked list where all children are stored
+    //Returns:      nothing
+    //Calls:        nothing
+    //Globals:      none 
     private static void generateChildren(GameBoard x, LList children) {
         boolean isValid;
         for (int i = 0; i < 4; i++) {
@@ -143,54 +149,52 @@ public class Flores2 {
             isValid = child.moveATile((i + 1), false);
             if (isValid) {
                 children.add(child);
-                System.out.println("Move valid...");
-                child.printBoard();
             }
             
         }//end of for loop
     }// end of generateMoves
 
+    //********************************************************************
+    //Method:       showSolutions
+    //Description:  displays a linked list
+    //Parameters:   list - the list to display
+    //Returns:      nothing
+    //Calls:        nothing
+    //Globals:      none 
     private static void showSolutions(LList list) {
         GameBoard temp;
-        int length = list.getLength();
-        System.out.printf("There are %d moves", length);
-        System.out.println();
         for (int i = 1; i < list.getLength() + 1; i++) {
             temp = (GameBoard) list.getEntry(i);
             temp.printBoard();
         }
     }
 
+    //********************************************************************
+    //Method:       checkChildren
+    //Description:  Before placing a child to the open queue, one must check that
+    //              the possible move is not in the open queue or closed list.
+    //Parameters:   children - the linked list containing all the children
+    //              open - the queue that contains the nodes in open
+    //              closed - the list that contains nodes that have been visited
+    //Returns:      nothing
+    //Calls:        isContained
+    //Globals:      none 
     private static void checkChildren(LList children, LinkedQueue open, LList closed) {
         LinkedQueue tempQueue = new LinkedQueue();
-        System.out.println("Checking...");
         for (int i = 1; i < (children.getLength() + 1); i++) {
             GameBoard child = (GameBoard) children.getEntry(i);
             for (int j = 1; j < (closed.getLength() + 1); j++) {
                 GameBoard boardClosed = (GameBoard) closed.getEntry(j);
-                System.out.println("for loop termination num =  " + (closed.getLength() + 1));
-                System.out.println("boardClosed = node " + j);
-                System.out.println("Closed board about to be compared...");
-                boardClosed.printBoard();
                 if (isContained(child, boardClosed)) {
-                    System.out.println("Previous children length = " + children.getLength());
                     children.remove(i);
-                    System.out.println("New children length = " + children.getLength());
-                    System.out.println("Contained removed");
                 }
             }
 
             while (!open.isEmpty()) {
-                System.out.println("Opened board about to be compared...");
-                
                 GameBoard boardOpen = (GameBoard) open.dequeue();
-                boardOpen.printBoard();
                 tempQueue.enqueue(boardOpen);
                 if (isContained(child, boardOpen) && !open.isEmpty()) {
-                    System.out.println("Previous children length = " + children.getLength());
                     children.remove(i);
-                    System.out.println("New children length = " + children.getLength());
-                    System.out.println("Contained removed");
                 }
             }
 
@@ -202,27 +206,36 @@ public class Flores2 {
         }
     }
 
+    //********************************************************************
+    //Method:       isContained
+    //Description:  checks to see if one board of a Gameboard object is equal to
+    //              the board of a different Gameboard object
+    //Parameters:   child - the first object to compared
+    //              a - the second object to be compared
+    //Returns:      true - the first and second object are equal
+    //              false - the first and seconf object are not equal
+    //Calls:        nothing
+    //Globals:      none 
     private static boolean isContained(GameBoard child, GameBoard a) {
-        System.out.println("===isContained===");
-        System.out.println("child ...");
-        child.printBoard();
-        System.out.println("being compared to a ...");
-        a.printBoard();
         for (int i = 0; i < a.board.length; i++) {
-
             if (!child.board[i].equals(a.board[i])) {
-                System.out.println("Not contained");
                 return false;
             }
         }
-        System.out.println("Is Contained!!");
         return true;
     }
 
+    //********************************************************************
+    //Method:       findPath
+    //Description:  finds the goal path
+    //Parameters:   goalPath - a linked list that contains the goal path
+    //              x - the node from which to start with
+    //Returns:      nothing
+    //Calls:        nothing
+    //Globals:      none 
     private static void findPath(LList goalPath, GameBoard x) {
         goalPath = new LList();
         boolean found = false;
-        //GameBoard start = (GameBoard)closed.getEntry(1);
         GameBoard preParent;
 
         while(!found){
