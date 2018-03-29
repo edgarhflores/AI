@@ -11,11 +11,11 @@ import java.io.RandomAccessFile;
 public class Flores3 {
 
     public static void main(String[] args) {
-        
+
         int[] pixel = new int[5];
-        
+
         pixel[0]++;
-        
+
         System.out.println("pixel[0]" + pixel[0]);
         System.out.println("pixel[1]" + pixel[1]);
 
@@ -66,7 +66,7 @@ public class Flores3 {
         //Print regions found
 //        for (int i = 0; i < image.imageHeight; i++) {
 //            for (int j = 0; j < image.imageWidth; j++) {
-//                System.out.print(r.labeledImage[i][j] + " ");
+//                System.out.printf("%6d",r.labeledImage[i][j]);
 //            }
 //            System.out.println("");
 //        }
@@ -128,28 +128,72 @@ public class Flores3 {
 //            image.closeImageDisplay();
 //            index++;
 //        }//end of while       
+//========================================== START OF: Understanding Region Class Globals ========================================== 
+        //------ What is pixelInRegion? ------ 
+        System.out.println("Total pixels in region 9909 -square- " + r.pixelsInRegion[9909]);
+
+        //------ What is firstPixelInRegion? ------ 
+//        System.out.println("first Pixel height = " + r.firstPixelInRegion.length);
+//        System.out.println("first Pixel width = " + r.firstPixelInRegion[0].length);
+        //Frist pixel of 9909
+        System.out.printf("row = %d\n", r.firstPixelInRegion[9909][0]);
+        
+        System.out.printf("col = %d\n", r.firstPixelInRegion[9909][1]);
+        //End Pixel of 9909
+        int endRow = (image.imageHeight - r.firstPixelInRegion[9909][0]);
+        System.out.printf("End row = %d\n", endRow);
+        int endCol = (image.imageWidth - r.firstPixelInRegion[9909][1]);
+        System.out.printf("End col = %d\n", endCol);
+
+        //------ What is borderPixelCount[]? ------ 
+        System.out.printf("boarder pixel count for region 9909 is %d\n", r.borderPixelCount[9909]);
+
+        //------ sumOfRows[]? ------ 
+        System.out.printf("Sum of Rows for region 9909 is %d\n", r.sumOfRows[9909]);
+
+        //------ sumOfColmuns[]? ------ 
+        System.out.printf("Sum of Cols for region 9909 is %d\n", r.sumOfColumns[9909]);
+//========================================== END OF: Understanding Region Class Globals ========================================== 
         //============================ Solve for a square ============================
         //Square = 9909, 102053
         int singleR[][] = r.getSingleRegion(9909);
 
         System.out.println("RegionID - 9909");
-        input.getKeyboardInput("Press ENTER to print selceted region...");
+        //input.getKeyboardInput("Press ENTER to print selceted region...");
         int imageCol = 0;
         int imageRow = 0;
+
         for (int row = 0; row < image.imageHeight; row++) {
             for (int col = 0; col < image.imageWidth; col++) {
-                // if()
-                if (singleR[row][col] == 255) {
-                    System.out.print(singleR[row][col]);
+                if (row == 23 && col == 518) {
+                    singleR[row][col] = 100;
+                }
+                if (row == endRow && col == endCol) {
+                    singleR[row][col] = 100;
+                }
+//                if(row >= 23 && row < (image.imageHeight - 23) && col >= 518 && col < (image.imageWidth - 518)){
+//                    singleR[row][col] = 100;
+//                }
+                System.out.printf("%4d", singleR[row][col]);
+            }//end of inner for loop 
+            System.out.println("");
 
-                    if (row == 0) {
-                        imageCol++;
-                    }
-                    if (col == 0) {
+        }//end of for loop 
+
+        for (int row = 0; row < image.imageHeight; row++) {
+            for (int col = 0; col < image.imageWidth; col++) {
+                //System.out.printf("%4d", singleR[row][col]);
+                if (singleR[row][col] == 100) {
+                    System.out.printf("%4d", singleR[row][col]);
+
+//                    if (row == 28) {
+//                        imageCol++;
+//                    }
+                    if (col == 518) {
                         row++;
                         System.out.println("");
                     }
-                }
+                }//end of if statement
 
 //                if (singleR[row][col] != 0) {
 //                    System.out.print(singleR[row][col]);
@@ -161,13 +205,20 @@ public class Flores3 {
 //                    System.out.println("");
 //                }//end of if   
             }//end of inner for loop 
-            if (singleR[row][0] == 255) {
-                System.out.println("");
-            }
+//            if (singleR[row][0] == 255) {
+//                System.out.println("");
+//            }//end of if statement
         }//end of for loop 
         System.out.println("--Square--");
         System.out.println("Row = " + imageRow);
         System.out.println("Col = " + imageCol);
+
+        System.out.println("showing region 9909....");
+        singleR = r.getSingleRegion(9909);
+        image.pixels = singleR;
+        image.showImage("RegionID: 9909", true);
+        input.getKeyboardInput("Press ENTER to Print Next Region...");
+        image.closeImageDisplay();
 
         //============================ Solve for a square ============================
         //What is firstPixelInRegion??

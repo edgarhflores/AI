@@ -79,9 +79,9 @@ public class EasyImageDisplayDriver {
 			}
 
 			sampleDisplayObject = new EasyImageDisplay(imageType, width, height, red, green, blue, gray);
-			//sampleDisplayObject.showImage("Image Display Routine", true);
-			//userInput = keyboardInput.getKeyboardInput("Press ENTER to exit...");
-			//sampleDisplayObject.closeImageDisplay();
+//			sampleDisplayObject.showImage("Image Display Routine", true);
+//			userInput = keyboardInput.getKeyboardInput("Press ENTER to exit...");
+//			sampleDisplayObject.closeImageDisplay();
                         return sampleDisplayObject;
 		}
 		//System.exit(0);
