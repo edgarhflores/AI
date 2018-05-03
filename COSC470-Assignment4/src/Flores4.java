@@ -13,15 +13,15 @@ import java.io.*;
 //Description:  Main class for the program. Allows set-up and plays one side.
 
 public class Flores4 {
-
+    
     public static char myColor = '?';           //B (black) or W (white) - ? means not yet selected
     public static char opponentColor = '?';     //ditto but opposite
-
+    
     //INSERT ANY ADDITIONAL GLOBAL VARIABLES HERE
     //===========================================
     //===========================================
     public static int playMode = 2;
-
+    
     //===========================================
     //===========================================
     //***************************************************************************************************
