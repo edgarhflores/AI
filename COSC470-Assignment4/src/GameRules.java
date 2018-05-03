@@ -15,22 +15,24 @@ public class GameRules {
     public static int playMode = 0;
     public static int row2 = 0;
 
-    public static String main(Board b, char myColor, char opponentColor, int playMode, int depth) {
-        
+    public static Board main(Board b, char myColor, char opponentColor, int playMode, int depth) {
+
         KeyboardInputClass keyboardInput = new KeyboardInputClass();
         GameRules.myColor = myColor;
         GameRules.opponentColor = opponentColor;
         GameRules.playMode = playMode;
-        String myMove = "";
+        String myMove;
 
         switch (playMode) {
             case 1:
-                //myMove = aiPlayer(b);
+                myMove = aiPlayer(b, 1);
+                b.move = myMove;
                 break;
             case 2:
                 //System.out.println("Play Mode: Random Mode");
-                myMove = generateMoves(b);
-                //myMove = randomMove(b, 1);
+                //myMove = generateMoves(b);
+                myMove = randomMove(b);
+                b.move = myMove;
                 break;
             case 3:
                 char rowText = keyboardInput.getCharacter(true, ' ', "ABCDEFGH", 1, "Enter row: ");
@@ -41,13 +43,14 @@ public class GameRules {
                 int col = (int) colText - 65;
                 if (checkMove(b, row, col)) {
                     myMove = "" + rowText + colText;
+                    b.move = myMove;
                 }
                 break;
             default:
                 break;
         }
 
-        return myMove;
+        return b;
     }// end of main
 
     // Checks to see that the place where the user placed the disc can outflank another disc  /,
@@ -244,38 +247,22 @@ public class GameRules {
 //
 //                }// end of if opponent disc count
 //            }// end of if statement
-
         }// end of check boundries
 
 //        System.out.println("Done");
 //        System.out.println("");
     }// end of flip discs
 
-    private static String randomMove(Board b, int depth) {
-        //System.out.println("In random move");
+    private static String generateMoves(Board b, int[][] moves) {
+        //int[][] movePos = new int[100][2];
         String move = "";
-        //LList children = new LList();
-        move = generateMoves(b);
-        //System.out.println("Random moves generated: " + children.getLength());
-        //for (int i = 1; i < children.getLength() + 1; i++) {
-        //Board child = (Board) children.getEntry(i);
-        // child.setHeuristic = 
-        //assignHeuristic(child);
-        //open.enqueue(child);
-        //}
-        return move;
-    }
-
-    private static String generateMoves(Board b) {
-        int[][] movePos = new int[100][2];
-        String move;
         int row = 0;
         int col = 0;
         for (int i = 0; i < b.boardRows; i++) {
             for (int j = 0; j < b.boardCols; j++) {
                 if (b.board[i][j] == myColor) {
                     System.out.println("Mycolor found at: row [" + i + "] col [" + j + "]");
-                    checkMove2(b, i, j, movePos);
+                    checkMove2(b, i, j, moves);
 //                    if (isVaild) {
 //                        movePos[0][row] = i;
 //                        movePos[1][row] = j;
@@ -284,170 +271,148 @@ public class GameRules {
                 }// end of outter if               
             }// end of for  for col      
         }// end of for for row
+
         System.out.println("Moves generated: " + row2);
         System.out.println("Valid moves are: ");
         for (int i = 0; i < row2; i++) {
             for (int j = 0; j < 2; j++) {
-                System.out.print(movePos[i][j] + "  ");
+                System.out.print(moves[i][j] + "  ");
             }
             System.out.println("");
         }
-   
-        int random = (int) (Math.random() * row2); 
-        
-        row = movePos[random][0];
-        col = movePos[random][1];
-        
-        System.out.println("Move choosen is: " + random);
-        System.out.println("row: " + row);
-        System.out.println("col: " + col);        
-        
+
         char rowText = (char) (row + 65);
         char colText = (char) (col + 65);
-        
-//        if(checkMove(b, row, col)){
-//            move = "" + rowText + colText;
-//        }
-        
-        
-        if(row2 == 0){
-            move = "";
-        }else{
-            checkMove(b, row, col);
+
+        if (playMode == 2) {
+            int random = (int) (Math.random() * row2);
+
+            row = moves[random][0];
+            col = moves[random][1];
+
+            System.out.println("Move choosen is: " + random);
+            System.out.println("row: " + row);
+            System.out.println("col: " + col);
+
+            if (row2 == 0) {
+                move = "";
+                row2 = 0;
+            } else {
+                checkMove(b, row, col);
+                move = "" + rowText + colText;
+                row2 = 0;
+            }
+        } else if (playMode == 3) {
             move = "" + rowText + colText;
         }
-        
-        row2 = 0; 
-        
         return move;
     }// end of method
 
-    private static void checkMove2(Board b, int row, int col, int [][] movePos) {
-        //System.out.println("Check N...\n");
-        boolean isN = check2(b, (row - 1), col, north, movePos);
-        //System.out.println("Check NE...\n");
-        boolean isNE = check2(b, (row - 1), (col + 1), northEast, movePos);
-        boolean isE = check2(b, row, (col + 1), east, movePos);
-        boolean isSE = check2(b, (row + 1), (col + 1), southEast, movePos);
-        boolean isS = check2(b, (row + 1), col, south, movePos);
-        boolean isSW = check2(b, (row + 1), (col - 1), southWest, movePos);
-        boolean isW = check2(b, row, (col - 1), west, movePos);
-        boolean isNW = check2(b, (row - 1), (col - 1), northWest, movePos);
-
-        //store(b, row, col, isN, isNE, isE, isSE, isS, isSW, isW, isNW, movePos);
+    private static void checkMove2(Board b, int row, int col, int[][] movePos) {
+        check2(b, (row - 1), col, north, movePos);
+        check2(b, (row - 1), (col + 1), northEast, movePos);
+        check2(b, row, (col + 1), east, movePos);
+        check2(b, (row + 1), (col + 1), southEast, movePos);
+        check2(b, (row + 1), col, south, movePos);
+        check2(b, (row + 1), (col - 1), southWest, movePos);
+        check2(b, row, (col - 1), west, movePos);
+        check2(b, (row - 1), (col - 1), northWest, movePos);
     }
 
-    private static boolean check2(Board b, int currRow, int currCol, int dir, int [][] movePos) {
+    private static void check2(Board b, int currRow, int currCol, int dir, int[][] movePos) {
         boolean isValid = false;
-        //System.out.println("Preforming Check...");
-//        switch (dir) {
-//            case 0: //n
-//                
-//                //System.out.println("Check N...\n");
-//                break;
-//            case 1://ne
-//                
-//                //System.out.println("Check NE...\n");
-//                break;
-//            case 2://e
-//                //System.out.println("Check E...\n");
-//                break;
-//            case 3://se
-//                //System.out.println("Check SE...\n");
-//                break;
-//            case 4://s
-//                //System.out.println("Check S...\n");
-//                break;
-//            case 5://sw
-//                //System.out.println("Check SW...\n");
-//                break;
-//            case 6://w
-//                //System.out.println("Check W...\n");
-//                break;
-//            case 7://nw
-//                //System.out.println("Check NW...\n");
-//                break;
-//        }// end of switch  
-
         if (currRow < b.boardRows && currRow >= 0 && currCol < b.boardCols && currCol >= 0) {
-           // System.out.println("row = " + currRow + "" + " is less than totalRows = " + b.boardRows);
-           // System.out.println("board[" + currRow + "][" + currCol + "] = " + b.board[currRow][currCol]);
-            //System.out.println("opponentColor = " + opponentColor);
-            boolean isEqual = b.board[currRow][currCol] == opponentColor;
-            //System.out.println("Does current Position equal oppent Color? " + isEqual);
             if (b.board[currRow][currCol] == opponentColor) {
                 opponentDiscCount++;
                 switch (dir) {
                     case 0: //n
-                       // System.out.println("Check N...\n");
-                        return check2(b, currRow - 1, currCol, dir, movePos);
+                        check2(b, currRow - 1, currCol, dir, movePos);
+                        break;
                     case 1://ne
-                        //System.out.println("Check NE...\n");
-                        return check2(b, currRow - 1, currCol + 1, dir, movePos);
+                        check2(b, currRow - 1, currCol + 1, dir, movePos);
+                        break;
                     case 2://e
-                        //System.out.println("Check E...\n");
-                        return check2(b, currRow, currCol + 1, dir, movePos);
+                        check2(b, currRow, currCol + 1, dir, movePos);
+                        break;
                     case 3://se
-                       // System.out.println("Check E...\n");
-                        return check2(b, currRow + 1, currCol + 1, dir, movePos);
+                        check2(b, currRow + 1, currCol + 1, dir, movePos);
+                        break;
                     case 4://s
-                        //System.out.println("Check S...\n");
-                        return check2(b, currRow + 1, currCol, dir, movePos);
+                        check2(b, currRow + 1, currCol, dir, movePos);
+                        break;
                     case 5://sw
-                       // System.out.println("Check SW...\n");
-                        return check2(b, currRow + 1, currCol - 1, dir, movePos);
+                        check2(b, currRow + 1, currCol - 1, dir, movePos);
+                        break;
                     case 6://w
-                       // System.out.println("Check W...\n");
-                        return check2(b, currRow, currCol - 1, dir, movePos);
+                        check2(b, currRow, currCol - 1, dir, movePos);
+                        break;
                     case 7://nw
-                       // System.out.println("Check NW...\n");
-                        return check2(b, currRow - 1, currCol - 1, dir, movePos);
+                        check2(b, currRow - 1, currCol - 1, dir, movePos);
+                        break;
                 }// end of switch               
             }// end of opponent color check
-            //System.out.println("\nCurrent position is not the same as opponentColor...");
-            //System.out.println("board[" + currRow + "][" + currCol + "] = " + b.board[currRow][currCol]);
-            isEqual = b.board[currRow][currCol] == ' ';
-            //System.out.println("Is current position a blank? " + isEqual);
             if (b.board[currRow][currCol] == ' ') {
-                isEqual = opponentDiscCount > 0;
-                //System.out.println("Was at least one opponent disc counted? " + isEqual);
                 if (opponentDiscCount > 0) {
                     isValid = true;
                 }//end of more than one disc counted check
             }//end of my color check
         }//end of bounderies check
-        //System.out.println("Returning isValid");
-        
-        if(isValid){
-            System.out.println("board[" + currRow + "][" + currCol + "] ");
-            movePos[row2][0]=  currRow;
-            movePos[row2][1]=  currCol;
-            row2++; 
-        } 
-//        System.out.println("isValid = " + isValid);
-//        System.out.println("");
+        if (isValid) {
+            boolean found = false;
+            //System.out.println("board[" + currRow + "][" + currCol + "] ");
+            for (int i = 0; i < row2; i++) {
+                if (movePos[i][0] == currRow && movePos[i][1] == currCol) {
+                    found = true;
+                }
+
+            }
+            if (!found) {
+                movePos[row2][0] = currRow;
+                movePos[row2][1] = currCol;
+                row2++;
+            }
+        }
         opponentDiscCount = 0;
-        return isValid;
     }// end of check
-    
-    private static String AIMove(Board board1, int depth) {
+
+    private static String aiPlayer(Board b, int depth) {
+        System.out.println("In AI player..");
+        int[][] moves = new int[1000][2];
+        int level = 0;
         //System.out.println("Working...");
         //need a variablo flip flop from current player to oppenent player I think that is myColor and oppenetColor
         boolean loop = true;
         LinkedQueue open = new LinkedQueue();
-        open.enqueue(board1);
+        open.enqueue(b);
         LList closed = new LList();
         LList children = null;
         //LList goalPath = null;
-
+        System.out.println("Is open empty? " + open.isEmpty());
         while (!open.isEmpty() && loop) {
+            System.out.println("In while loop..");
             Board x = (Board) open.dequeue();
-            if (depth == 1) { // this needs to stop at the cut off point so like depth = user cut off point
+            if (level == depth) { // this needs to stop at the cut off point so like depth = user cut off point
                 loop = false;
             } else {
                 children = new LList();
-                generateChildren(x, children);
-                checkChildren(children, open, closed);              
+                System.out.println("Generating moves..");
+                generateMoves(x, moves);
+//                System.out.println("Valid moves are: ");
+//                for (int i = 0; i < row2; i++) {
+//                    for (int j = 0; j < moves[0].length; j++) {                   
+//                        System.out.print(moves[i][j] + "  ");
+//                    }
+//                    System.out.println("");
+//                }
+                generateChildren(x, children, moves);
+                System.out.println("Children generated:");
+                for (int i = 1; i <= children.getLength(); i++) {
+                    Board temp = (Board) children.getEntry(i);
+                    System.out.println("---- "+temp.move+" ----");
+                    temp.showBoard();
+                    System.out.println("");
+                }
+                //checkChildren(children, open, closed);
                 //for (int i = 1; i < children.getLength() + 1; i++) {
                 //Board child = (Board) children.getEntry(i);
                 //child.setHeuristic = 
@@ -455,6 +420,8 @@ public class GameRules {
                 //open.enqueue(child);
                 //}               
             }
+
+            level++;
         }
         return "";
     }
@@ -464,16 +431,50 @@ public class GameRules {
         return false;
     }
 
-    private static void generateChildren(Board x, LList children) {
-        throw new UnsupportedOperationException("jhvvjjvjhjvjvjvjjhvjvjvjvjhjhvjvhvjhvjvhvhvvvhjvvvhjvhvjvvhvhvvv."); //To change body of generated methods, choose Tools | Templates.
+    private static void generateChildren(Board x, LList children, int[][] moves) {
+        int row;
+        int col;
+        char rowText;
+        char colText;
+        for (int i = 0; i < row2; i++) { // number of childeren to generate
+            row = moves[i][0];
+            col = moves[i][1];
+            rowText = (char) (row + 65);
+            colText = (char) (col + 65);
+            System.out.println("Generating child for: ");
+            Board child = new myBoard(x.boardRows, x.boardCols, x.maxMoveTime);
+            copy(child, x);
+            checkMove(child, row, col);
+            child.move = ""+rowText+colText;
+            children.add(child);
+        }
     }
 
     private static void checkChildren(LList children, LinkedQueue open, LList closed) {
 
+        //Check to make sure none are in opened or closed
+        //                                                                                
     }
 
     private static void assignHeuristic(Board child) {
 
+    }
+
+    private static String randomMove(Board b) {
+        int[][] moves = new int[1000][2];
+        return generateMoves(b, moves);
+    }
+
+    private static void copy(Board child, Board x) {
+        child.colorSelected = x.colorSelected;
+        child.move = x.move;
+        child.status = x.status;
+        child.whoseTurn = x.whoseTurn;
+        for (int i = 0; i < x.boardRows; i++) {
+            for (int j = 0; j < x.boardCols; j++) {
+                child.board[i][j] = x.board[i][j];
+            }
+        }
     }
 
 }// end of class

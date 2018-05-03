@@ -20,7 +20,7 @@ public class Flores4 {
     //INSERT ANY ADDITIONAL GLOBAL VARIABLES HERE
     //===========================================
     //===========================================
-    public static int playMode = 2;
+    public static int playMode = 1;
     
     //===========================================
     //===========================================
@@ -79,14 +79,20 @@ public class Flores4 {
         //==================================================
         //show defaults
         //  - show play mode
-        if (playMode == 1) {
-            System.out.println("Play Mode: Intelligent Mode");
-            depth = 8;
-        } else if (playMode == 2) {
-            System.out.println("Play Mode: Random Mode");
-            depth = 1;
-        } else if (playMode == 3) {
-            System.out.println("Play Mode: Manual Mode");
+        switch (playMode) {
+            case 1:
+                System.out.println("Play Mode: Intelligent Mode");
+                depth = 8;
+                break;
+            case 2:
+                System.out.println("Play Mode: Random Mode");
+                depth = 1;
+                break;
+            case 3:
+                System.out.println("Play Mode: Manual Mode");
+                break;
+            default:
+                break;
         }
         System.out.println("");
         //  - show max depth search level
@@ -99,8 +105,8 @@ public class Flores4 {
         boolean settings = (s == 'Y') ? settings = true : false;
         if (!settings) {
             System.out.println("");
-            System.out.println("Enter play Mode: (Default = Random Mode)\n");
-            //System.out.println("1) Intelligent Mode");
+            System.out.println("Enter play Mode: (Default = Intelligent Mode)\n");
+            System.out.println("1 = Intelligent Mode");
             System.out.println("2 = Random Mode");
             System.out.println("3 = Manual Mode");
             playMode = keyboardInput.getInteger(true, 2, 1, 3, "");
@@ -176,19 +182,31 @@ public class Flores4 {
                 //===================================================
                 //===================================================
                 
+                Board myBoard = new myBoard(currentBoard.boardRows, currentBoard.boardCols, currentBoard.maxMoveTime);
+                myBoard.colorSelected = currentBoard.colorSelected;
+                myBoard.move = currentBoard.move;
+                myBoard.status = currentBoard.status;
+                myBoard.whoseTurn = currentBoard.whoseTurn;
+                
+                for (int i = 0; i < currentBoard.boardRows; i++) {
+                    for (int j = 0; j < currentBoard.boardCols; j++) {
+                       myBoard.board[i][j] = currentBoard.board[i][j];              
+                    }    
+                }
                 
                 switch (playMode) {
                     case 1:
-                        //System.out.println("Play Mode: Intelligent Mode ");
+                        currentBoard = GameRules.main(myBoard, myColor, opponentColor, playMode, depth);
+                        myMove = currentBoard.move;
+                        
                         break;
                     case 2:
-                        //System.out.println("Play Mode: Random Mode");
-                        
-                        myMove = GameRules.main(currentBoard, myColor, opponentColor, playMode, depth);
+                        currentBoard = GameRules.main(myBoard, myColor, opponentColor, playMode, depth);
+                        myMove = currentBoard.move;
                         break;
                     case 3:
-                       // System.out.println("Play Mode: Manual Mode");
-                        myMove = GameRules.main(currentBoard, myColor, opponentColor, playMode, depth);
+                        currentBoard = GameRules.main(myBoard, myColor, opponentColor, playMode, depth);
+                        myMove = currentBoard.move;
                         break;
                     default:
                         break;

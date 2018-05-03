@@ -1,6 +1,8 @@
 
 public class myBoard extends Board{
     
+    
+    
 //    public static String move;
 //    
     public myBoard(int rows, int cols, int time) {
